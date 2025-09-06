@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сайт відключено</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #1e1e2f;
+      color: #fff;
+      position: relative;
+    }
+
+    /* Particles canvas */
+    #particles {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 60px 50px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ff4c4c;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -12px;
+      transform: translateX(-50%);
+      width: 50%;
+      height: 4px;
+      background: #ff4c4c;
+      border-radius: 2px;
+      animation: underline 1s ease forwards;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #ddd;
+      margin-bottom: 30px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 14px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(45deg, #ff4c4c, #ff7a50);
+      border-radius: 50px;
+      box-shadow: 0 8px 25px rgba(255,76,76,0.4);
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(255,76,76,0.6);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes underline {
+      0% { width: 0; }
+      100% { width: 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="container">
+  <h1>Сайт відключено за борг</h1>
+  <p>Щоб відновити доступ, сплатіть рахунок або зв’яжіться з адміністрацією.</p>
+  <a href="mailto:admin@example.com" class="button">Зв’язатися з підтримкою</a>
+</div>
+
+<script>
+  // Particles animation
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let particlesArray;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    initParticles();
+  });
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 3 + 1;
+      this.speedX = (Math.random() - 0.5) * 1.5;
+      this.speedY = (Math.random() - 0.5) * 1.5;
+      this.color = `rgba(255,255,255,${Math.random() * 0.5 + 0.2})`;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particlesArray = [];
+    let numberOfParticles = Math.floor((canvas.width * canvas.height) / 10000);
+    for(let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let particle of particlesArray) {
+      particle.update();
+      particle.draw();
+    }
+    connectParticles();
+    requestAnimationFrame(animateParticles);
+  }
+
+  function connectParticles() {
+    let maxDistance = 120;
+    for(let a = 0; a < particlesArray.length; a++) {
+      for(let b = a; b < particlesArray.length; b++) {
+        let dx = particlesArray[a].x - particlesArray[b].x;
+        let dy = particlesArray[a].y - particlesArray[b].y;
+        let distance = Math.sqrt(dx*dx + dy*dy);
+        if(distance < maxDistance) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255,255,255,${1 - distance/maxDistance})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+          ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  resizeCanvas();
+  initParticles();
+  animateParticles();
+</script>
+
+</body>
+</html>
